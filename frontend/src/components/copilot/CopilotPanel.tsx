@@ -4,10 +4,6 @@ import type { CopilotMessage } from "../../types/copilot";
 import { CopilotInput } from "./CopilotInput";
 import { CopilotMessageList } from "./CopilotMessageList";
 
-function createId() {
-  return `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
 type StructuredComplaint = {
   customer_name: string | null;
   product_name: string | null;
@@ -21,17 +17,28 @@ type StructuredComplaint = {
   complaint_description: string | null;
 };
 
-export function CopilotPanel() {
+type CopilotPanelProps = {
+  onExtracted: (complaint: StructuredComplaint) => void;
+};
+
+function createId() {
+  return `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+export function CopilotPanel({ onExtracted }: CopilotPanelProps) {
   const [messages, setMessages] = useState<CopilotMessage[]>(
     INITIAL_COPILOT_MESSAGES,
   );
+
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
   async function handleSend() {
     const trimmed = input.trim();
 
-    if (!trimmed || isTyping) return;
+    if (!trimmed || isTyping) {
+      return;
+    }
 
     const userMessage: CopilotMessage = {
       id: createId(),
@@ -67,10 +74,14 @@ export function CopilotPanel() {
 
       const result: StructuredComplaint = await response.json();
 
+      // Send extracted data to ComplaintIntakePage
+      onExtracted(result);
+
       const assistantMessage: CopilotMessage = {
         id: createId(),
         role: "assistant",
-        content: JSON.stringify(result, null, 2),
+        content:
+          "I’ve successfully extracted the complaint details. The information is ready for review in the complaint form.",
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -105,6 +116,7 @@ export function CopilotPanel() {
                 strokeWidth="1.6"
                 strokeLinejoin="round"
               />
+
               <path
                 d="M12 12v5M10.5 14.5 12 12l1.5 2.5"
                 stroke="currentColor"
@@ -116,6 +128,7 @@ export function CopilotPanel() {
 
           <div>
             <h2 className="copilot-panel__title">AIVOA Copilot</h2>
+
             <p className="copilot-panel__hint">
               Drop complaint files or paste text below.
             </p>
@@ -135,7 +148,7 @@ export function CopilotPanel() {
           disabled={isTyping}
         />
 
-        <p className="copilot-panel__powered">POWERED BY LANGGRAPH</p>
+        <p className="copilot-panel__powered">POWERED BY GROQ</p>
       </div>
     </aside>
   );

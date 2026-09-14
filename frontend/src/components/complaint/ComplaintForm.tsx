@@ -1,30 +1,41 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react'
-import {
-  INITIAL_COMPLAINT_FORM,
-  type ComplaintFormData,
-} from '../../types/complaint'
-import { FormSection } from './FormSection'
-import { RiskAssessmentCard } from './RiskAssessmentCard'
+import type { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
+import { useState } from "react";
 
-export function ComplaintForm() {
-  const [form, setForm] = useState<ComplaintFormData>(INITIAL_COMPLAINT_FORM)
-  const [commitMessage, setCommitMessage] = useState<string | null>(null)
+import type { ComplaintFormData } from "../../types/complaint";
+
+import { FormSection } from "./FormSection";
+import { RiskAssessmentCard } from "./RiskAssessmentCard";
+
+type ComplaintFormProps = {
+  form: ComplaintFormData;
+  setForm: Dispatch<SetStateAction<ComplaintFormData>>;
+};
+
+export function ComplaintForm({ form, setForm }: ComplaintFormProps) {
+  const [commitMessage, setCommitMessage] = useState<string | null>(null);
 
   function handleChange(
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) {
-    const { name, value } = event.target
+    const { name, value } = event.target;
+
     setForm((prev) => ({
       ...prev,
       [name]: value,
-    }))
-    if (commitMessage) setCommitMessage(null)
+    }));
+
+    if (commitMessage) {
+      setCommitMessage(null);
+    }
   }
 
   function handleCommit(event: FormEvent) {
-    event.preventDefault()
+    event.preventDefault();
+
     // Visual-only for this milestone — no QMS / API persistence yet.
-    setCommitMessage('Draft ready for QMS ledger (local only — not submitted).')
+    setCommitMessage(
+      "Draft ready for QMS ledger (local only — not submitted).",
+    );
   }
 
   return (
@@ -32,16 +43,19 @@ export function ComplaintForm() {
       <header className="complaint-form__header">
         <div>
           <h1 className="complaint-form__title">Log Customer Complaint</h1>
+
           <p className="complaint-form__subtitle">
             API &amp; FDF Quality Assurance Module
           </p>
         </div>
+
         <span className="status-badge">Pending Triage</span>
       </header>
 
       <FormSection title="1. ORIGIN & CUSTOMER DETAILS" columns={2}>
         <label className="field">
           <span className="field__label">Complaint Source</span>
+
           <input
             className="field__control"
             type="text"
@@ -54,11 +68,12 @@ export function ComplaintForm() {
 
         <label className="field">
           <span className="field__label">Customer Name</span>
+
           <input
             className="field__control"
             type="text"
-            name="customerName"
-            value={form.customerName}
+            name="customer_name"
+            value={form.customer_name}
             onChange={handleChange}
             placeholder="Customer / company name"
           />
@@ -68,11 +83,12 @@ export function ComplaintForm() {
       <FormSection title="2. PRODUCT & BATCH IDENTIFICATION" columns={2}>
         <label className="field">
           <span className="field__label">Product Name</span>
+
           <input
             className="field__control"
             type="text"
-            name="productName"
-            value={form.productName}
+            name="product_name"
+            value={form.product_name}
             onChange={handleChange}
             placeholder="Product name"
           />
@@ -80,23 +96,25 @@ export function ComplaintForm() {
 
         <label className="field">
           <span className="field__label">Product Strength/Grade</span>
+
           <input
             className="field__control"
             type="text"
-            name="productStrengthGrade"
-            value={form.productStrengthGrade}
+            name="strength"
+            value={form.strength}
             onChange={handleChange}
-            placeholder="e.g., IP/BP"
+            placeholder="e.g., 500 mg"
           />
         </label>
 
         <label className="field">
           <span className="field__label">Batch / Lot Number</span>
+
           <input
             className="field__control"
             type="text"
-            name="batchLotNumber"
-            value={form.batchLotNumber}
+            name="batch_number"
+            value={form.batch_number}
             onChange={handleChange}
             placeholder="Batch / lot number"
           />
@@ -104,11 +122,12 @@ export function ComplaintForm() {
 
         <label className="field">
           <span className="field__label">Affected Quantity</span>
+
           <input
             className="field__control"
             type="text"
-            name="affectedQuantity"
-            value={form.affectedQuantity}
+            name="affected_quantity"
+            value={form.affected_quantity}
             onChange={handleChange}
             placeholder="e.g., 25 kg (1 HDPE Drum)"
           />
@@ -116,11 +135,12 @@ export function ComplaintForm() {
 
         <label className="field">
           <span className="field__label">Manufacturing Date</span>
+
           <input
             className="field__control"
             type="text"
-            name="manufacturingDate"
-            value={form.manufacturingDate}
+            name="manufacturing_date"
+            value={form.manufacturing_date}
             onChange={handleChange}
             placeholder="Manufacturing date"
           />
@@ -128,11 +148,12 @@ export function ComplaintForm() {
 
         <label className="field">
           <span className="field__label">Expiry Date</span>
+
           <input
             className="field__control"
             type="text"
-            name="expiryDate"
-            value={form.expiryDate}
+            name="expiry_date"
+            value={form.expiry_date}
             onChange={handleChange}
             placeholder="Expiry date"
           />
@@ -142,11 +163,12 @@ export function ComplaintForm() {
       <FormSection title="4. DEFECT ANALYSIS">
         <label className="field field--full">
           <span className="field__label">Complaint Category</span>
+
           <input
             className="field__control"
             type="text"
-            name="complaintCategory"
-            value={form.complaintCategory}
+            name="complaint_category"
+            value={form.complaint_category}
             onChange={handleChange}
             placeholder="Complaint category"
           />
@@ -154,10 +176,11 @@ export function ComplaintForm() {
 
         <label className="field field--full">
           <span className="field__label">Complaint Description</span>
+
           <textarea
             className="field__control field__control--textarea"
-            name="complaintDescription"
-            value={form.complaintDescription}
+            name="complaint_description"
+            value={form.complaint_description}
             onChange={handleChange}
             placeholder="Describe the complaint..."
             rows={4}
@@ -178,10 +201,11 @@ export function ComplaintForm() {
             {commitMessage}
           </p>
         )}
+
         <button type="submit" className="commit-button">
           Commit to QMS Ledger
         </button>
       </div>
     </form>
-  )
+  );
 }
